@@ -3,7 +3,8 @@ import { fetchData, processStats } from '../utils/dataFetcher';
 import { motion } from 'framer-motion';
 import {
   Users, BarChart2, AlertTriangle, Activity,
-  Database, RefreshCw, Zap, TrendingUp, ShieldCheck, Lightbulb
+  Database, RefreshCw, Zap, TrendingUp, ShieldCheck, Lightbulb,
+  Sun, Moon
 } from 'lucide-react';
 
 import KpiCard from './KpiCard';
@@ -187,6 +188,14 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
   const load = async () => {
     setLoading(true);
@@ -277,18 +286,21 @@ const Dashboard = () => {
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-3)' }}>
+            <button className="theme-toggle" onClick={toggleTheme} title={`Ganti ke mode ${theme === 'dark' ? 'terang' : 'gelap'}`}>
+              {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+              <span>{theme === 'dark' ? 'Terang' : 'Gelap'}</span>
+            </button>
             {lastUpdated && (
               <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                Diperbarui {lastUpdated}
+                {lastUpdated}
               </span>
             )}
-            <span className="nav-badge">Live Data</span>
             <button
               onClick={load}
               title="Refresh"
-              style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', padding: '4px 8px', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', alignItems: 'center' }}
+              className="nav-btn"
             >
-              <RefreshCw size={14} />
+              <RefreshCw size={14} className={loading ? 'spin' : ''} />
             </button>
           </div>
         </div>
